@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+<body class="text-center">
+    {% block homebutton %}
+        <br>
+        <div>
+            <a href="{{ path('homepage') }}">Back to the home page</a>
+        </div>
+        <br>
+    {% endblock %}
+
+    {% block body %}{% endblock %}
+
+    {% block javascripts %}
+        <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
+        {% block other_scripts %}{% endblock %}
+        <script src="{{ asset('js/popper.min.js') }}"></script>
+        <script src="{{ asset('css/bootstrap.min.css') }}"></script>
+    {% endblock %}
+</body>
+</html>
