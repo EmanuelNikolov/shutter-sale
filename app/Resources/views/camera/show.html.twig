@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Camera</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ camera.id }}</td>
+            </tr>
+            <tr>
+                <th>Make</th>
+                <td>{{ camera.make }}</td>
+            </tr>
+            <tr>
+                <th>Model</th>
+                <td>{{ camera.model }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ camera.price }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ camera.quantity }}</td>
+            </tr>
+            <tr>
+                <th>Minshutterspeed</th>
+                <td>{{ camera.minShutterSpeed }}</td>
+            </tr>
+            <tr>
+                <th>Maxshutterspeed</th>
+                <td>{{ camera.maxShutterSpeed }}</td>
+            </tr>
+            <tr>
+                <th>Miniso</th>
+                <td>{{ camera.minIso }}</td>
+            </tr>
+            <tr>
+                <th>Maxiso</th>
+                <td>{{ camera.maxIso }}</td>
+            </tr>
+            <tr>
+                <th>Isfullframe</th>
+                <td>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Videoresolution</th>
+                <td>{{ camera.videoResolution }}</td>
+            </tr>
+            <tr>
+                <th>Lightmetering</th>
+                <td>{{ camera.lightMetering }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ camera.description }}</td>
+            </tr>
+            <tr>
+                <th>Imageurl</th>
+                <td>{{ camera.imageUrl }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('camera_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('camera_edit', { 'id': camera.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

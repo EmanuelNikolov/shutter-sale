@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Cameras list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Minshutterspeed</th>
+                <th>Maxshutterspeed</th>
+                <th>Miniso</th>
+                <th>Maxiso</th>
+                <th>Isfullframe</th>
+                <th>Videoresolution</th>
+                <th>Lightmetering</th>
+                <th>Description</th>
+                <th>Imageurl</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for camera in cameras %}
+            <tr>
+                <td><a href="{{ path('camera_show', { 'id': camera.id }) }}">{{ camera.id }}</a></td>
+                <td>{{ camera.make }}</td>
+                <td>{{ camera.model }}</td>
+                <td>{{ camera.price }}</td>
+                <td>{{ camera.quantity }}</td>
+                <td>{{ camera.minShutterSpeed }}</td>
+                <td>{{ camera.maxShutterSpeed }}</td>
+                <td>{{ camera.minIso }}</td>
+                <td>{{ camera.maxIso }}</td>
+                <td>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</td>
+                <td>{{ camera.videoResolution }}</td>
+                <td>{{ camera.lightMetering }}</td>
+                <td>{{ camera.description }}</td>
+                <td>{{ camera.imageUrl }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('camera_show', { 'id': camera.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('camera_edit', { 'id': camera.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('camera_new') }}">Create a new camera</a>
+        </li>
+    </ul>
+{% endblock %}

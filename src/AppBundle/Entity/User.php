@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
@@ -11,8 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-class User
+class User implements UserInterface, \Serializable
 {
+
     /**
      * @var int
      *
@@ -208,6 +210,52 @@ class User
     {
         $this->cameras = $cameras;
         return $this;
+    }
+
+    public function serialize()
+    {
+        return serialize([
+          $this->getId(),
+          $this->getUsername(),
+          $this->getPassword(),
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list(
+          $this->id,
+          $this->username,
+          $this->password,
+          ) = unserialize($serialized);
+    }
+
+    public function getRoles()
+    {
+        return ['ROLE_USER'];
+    }
+
+    /**
+     * Returns the salt that was originally used to encode the password.
+     *
+     * This can return null if the password was not encoded using a salt.
+     *
+     * @return string|null The salt
+     */
+    public function getSalt()
+    {
+        return null;
+    }
+
+    /**
+     * Removes sensitive data from the user.
+     *
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     */
+    public function eraseCredentials()
+    {
+        $this->plainPassword = null;
     }
 }
 
