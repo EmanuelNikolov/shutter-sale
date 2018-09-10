@@ -3,6 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Camera
@@ -12,9 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Camera
 {
+
     /**
      * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -23,91 +25,126 @@ class Camera
 
     /**
      * @var string
-     *
+     * @Assert\Choice(callback="getMakes")
      * @ORM\Column(name="make", type="string", length=5)
      */
     private $make;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *     pattern="/[A-Z\d-]+/",
+     *     message="Model can contain only uppercase letters, digits and dashes
+     *   (-)"
+     * )
      * @ORM\Column(name="model", type="string", length=255)
      */
     private $model;
 
     /**
      * @var float
-     *
+     * @Assert\Type("float")
+     * @Assert\GreaterThan(0)
      * @ORM\Column(name="price", type="float")
      */
     private $price;
 
     /**
      * @var int
-     *
+     * @Assert\Range(
+     *      min = 0,
+     *      max = 100,
+     *      minMessage = "Quantity must be at least {{ limit }}",
+     *      maxMessage = "Quantity must be at most {{ limit }}"
+     * )
      * @ORM\Column(name="quantity", type="smallint")
      */
     private $quantity;
 
     /**
      * @var int
-     *
+     * @Assert\Range(
+     *      min = 0,
+     *      max = 30,
+     *      minMessage = "Minimum Shutter Speed must be at least {{ limit }}",
+     *      maxMessage = "Minimum Shutter Speed must be at most {{ limit }}"
+     * )
      * @ORM\Column(name="min_shutter_speed", type="smallint")
      */
     private $minShutterSpeed;
 
     /**
      * @var int
-     *
+     * @Assert\Range(
+     *      min = 2000,
+     *      max = 8000,
+     *      minMessage = "Maximum Shutter Speed must be at least {{ limit }}",
+     *      maxMessage = "Maximum Shutter Speed must be at most {{ limit }}"
+     * )
      * @ORM\Column(name="max_shutter_speed", type="smallint")
      */
     private $maxShutterSpeed;
 
     /**
      * @var int
-     *
+     * @Assert\Choice(callback="getMinIsos")
      * @ORM\Column(name="min_iso", type="smallint")
      */
     private $minIso;
 
     /**
      * @var int
-     *
+     * @Assert\Range(
+     *      min = 200,
+     *      max = 409600,
+     *      minMessage = "Max ISO must be at least {{ limit }}",
+     *      maxMessage = "Max ISO must be at most {{ limit }}"
+     * )
      * @ORM\Column(name="max_iso", type="integer")
      */
     private $maxIso;
 
     /**
      * @var bool
-     *
+     * @Assert\Type("bool")
      * @ORM\Column(name="is_full_frame", type="boolean")
      */
     private $isFullFrame;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      max = 20,
+     *      maxMessage = "Video Resolution cannot be longer than {{ limit }} characters"
+     * )
      * @ORM\Column(name="video_resolution", type="string", length=15)
      */
     private $videoResolution;
 
     /**
      * @var string
-     *
+     * @Assert\Choice(callback="getLightMeterings")
      * @ORM\Column(name="light_metering", type="string", length=15)
      */
     private $lightMetering;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
+     * @Assert\Type("string")
+     * @Assert\Length(
+     *      max = 6000,
+     *      maxMessage = "Description cannot be longer than {{ limit }} characters"
+     * )
      * @ORM\Column(name="description", type="string", length=6000)
      */
     private $description;
 
     /**
      * @var string
-     *
+     * @Assert\Url(checkDNS = "ANY")
      * @ORM\Column(name="image_url", type="string", length=255)
      */
     private $imageUrl;
@@ -458,6 +495,57 @@ class Camera
     {
         $this->user = $user;
         return $this;
+    }
+
+    /**
+     * Callback for Make Assert annotation
+     */
+    public static function getMakes()
+    {
+        return [
+          'Canon',
+          'Nikon',
+          'Penta',
+          'Sony',
+        ];
+    }
+
+    /**
+     * Callback for Light Metering Assert annotation
+     */
+    public static function getLightMeterings()
+    {
+        return [
+          'spot',
+          'center-weighted',
+          'evaluative',
+        ];
+    }
+
+    /**
+     * Callback for Min ISO Assert annotation
+     */
+    public static function getMinIsos()
+    {
+        return [
+          50,
+          100,
+        ];
+    }
+
+    /**
+     * Checks if max ISO is divisible by 100.
+     * @Assert\Callback
+     * @param \Symfony\Component\Validator\Context\ExecutionContextInterface $context
+     * @param $payload
+     */
+    public function maxIsoDivisibleBy(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->getMaxIso() % 100 !== 0) {
+            $context->buildViolation('Number must be divisible by 100')
+                ->atPath('maxIso')
+                ->addViolation();
+        }
     }
 }
 

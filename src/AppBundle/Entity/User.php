@@ -4,11 +4,11 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
- *
  * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
@@ -17,7 +17,6 @@ class User implements UserInterface, \Serializable
 
     /**
      * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -26,33 +25,52 @@ class User implements UserInterface, \Serializable
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank()
+     * @Assert\Type("alpha", message="Your username can contain only letters (case-insensitive)")
+     * @Assert\Length(
+     *      min = 4,
+     *      max = 20,
+     *      minMessage = "Your username must be at least {{ limit }} characters long",
+     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     * )
      * @ORM\Column(name="username", type="string", length=20, unique=true)
      */
     private $username;
 
     /**
      * @var string
-     *
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
      * @ORM\Column(name="email", type="string", length=255, unique=true)
      */
     private $email;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="password", type="string", length=255)
      */
     private $password;
 
     /**
      * The plain password from user input on registration.
+     * @var string
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 3,
+     *      minMessage = "Your password must be at least {{ limit }} characters long",
+     * )
+     * @Assert\Regex(
+     *     pattern="/[a-z0-9]+/",
+     *     message="Your password can only contain lowercase letter and digits"
+     * )
      */
     private $plainPassword;
 
     /**
      * @var string
-     *
+     * @Assert\Regex(
+     *     pattern="/^\+\d{10,12}$/",
+     *     message="Your phone number must start with a + followed by 10 to 12 digits"
+     * )
      * @ORM\Column(name="phone", type="string", length=13, unique=true)
      */
     private $phone;

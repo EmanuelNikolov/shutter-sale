@@ -2,79 +2,61 @@
 
 {% block body %}
     <h1>Camera</h1>
+    <h2 class="h4">
+        Posted by:
+        <a href="{{ path('user_show', { 'id': camera.user.id }) }}">
+            {{ camera.user.username }}
+        </a>
+    </h2>
 
-    <table>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Min Shutter Speed</th>
+            <th>Max Shutter Speed</th>
+            <th>Min ISO</th>
+            <th>Max ISO</th>
+            <th>Full Frame</th>
+            <th>Video Res</th>
+            <th>Light Metering</th>
+            <th>Description</th>
+            <th>Image</th>
+        </tr>
+        </thead>
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ camera.id }}</td>
-            </tr>
-            <tr>
-                <th>Make</th>
-                <td>{{ camera.make }}</td>
-            </tr>
-            <tr>
-                <th>Model</th>
-                <td>{{ camera.model }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ camera.price }}</td>
-            </tr>
-            <tr>
-                <th>Quantity</th>
-                <td>{{ camera.quantity }}</td>
-            </tr>
-            <tr>
-                <th>Minshutterspeed</th>
-                <td>{{ camera.minShutterSpeed }}</td>
-            </tr>
-            <tr>
-                <th>Maxshutterspeed</th>
-                <td>{{ camera.maxShutterSpeed }}</td>
-            </tr>
-            <tr>
-                <th>Miniso</th>
-                <td>{{ camera.minIso }}</td>
-            </tr>
-            <tr>
-                <th>Maxiso</th>
-                <td>{{ camera.maxIso }}</td>
-            </tr>
-            <tr>
-                <th>Isfullframe</th>
-                <td>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Videoresolution</th>
-                <td>{{ camera.videoResolution }}</td>
-            </tr>
-            <tr>
-                <th>Lightmetering</th>
-                <td>{{ camera.lightMetering }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ camera.description }}</td>
-            </tr>
-            <tr>
-                <th>Imageurl</th>
-                <td>{{ camera.imageUrl }}</td>
-            </tr>
+        <tr>
+            <td>{{ camera.id }}</td>
+            <td>{{ camera.make }}</td>
+            <td>{{ camera.model }}</td>
+            <td>{{ camera.price }}</td>
+            <td>{{ camera.quantity }}</td>
+            <td>{{ camera.minShutterSpeed }}</td>
+            <td>{{ camera.maxShutterSpeed }}</td>
+            <td>{{ camera.minIso }}</td>
+            <td>{{ camera.maxIso }}</td>
+            <td>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</td>
+            <td>{{ camera.videoResolution }}</td>
+            <td>{{ camera.lightMetering }}</td>
+            <td>{{ camera.description }}</td>
+            <td><img src="{{ camera.imageUrl }}"></td>
+        </tr>
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('camera_index') }}">Back to the list</a>
-        </li>
-        <li>
+    <div>
+        <div>
             <a href="{{ path('camera_edit', { 'id': camera.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+        </div>
+        <div>
+            {{ form(delete_form) }}
+        </div>
+        <div>
+            <a href="{{ path('camera_index') }}">Back to the list</a>
+        </div>
+    </div>
 {% endblock %}

@@ -1,5 +1,43 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+    {% if app.user.id is same as(user.id) %}
+        <h1>Welcome, {{ user.username }}</h1>
+    {% else %}
+        <h1>{{ user.username }}'s Profile</h1>
+    {% endif %}
 
+    <ul class="list-group">
+        <li class="list-group-item">Email: {{ user.email }}</li>
+        <li class="list-group-item">Phone Number: {{ user.phone }}n</li>
+    </ul>
+
+    {# camera \AppBundle\Entity\Camera #}
+    {% for camera in user.cameras %}
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ camera.make }}</td>
+                <td>{{ camera.model }}</td>
+                <td>{{ camera.price }}</td>
+
+                <td>
+                    <a href="{{ path('camera_show', { 'id': camera.id }) }}">show</a>
+                    <span> | </span>
+                    {% if app.user.id is same as(user.id) %}
+                        <a href="{{ path('camera_edit', { 'id': camera.id }) }}">edit</a>
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    {% endfor %}
 {% endblock %}

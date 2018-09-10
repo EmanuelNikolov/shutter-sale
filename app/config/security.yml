@@ -36,6 +36,7 @@ security:
                 target: /
 
             logout_on_user_change: true
+
     access_control:
         - { path: ^/camera, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/user, roles: IS_AUTHENTICATED_FULLY}
