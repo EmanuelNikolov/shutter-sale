@@ -1,43 +1,109 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-    {% if app.user.id is same as(user.id) %}
-        <h1>Welcome, {{ user.username }}</h1>
+    {% set same_user = app.user.id is same as(user.id) %}
+    {% if same_user %}
+        <h1 class="mb-3">
+            <span>
+                <a href="{{ path('user_edit') }}"
+                   class="btn btn-primary"
+                   role="button">Edit profile</a>
+
+                Welcome, {{ user.username }}
+
+                <a href="{{ path('security_logout') }}"
+                   class="btn btn-dark"
+                   role="button">Logout</a>
+            </span>
+        </h1>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('admin_index') }}"
+               class="btn btn-danger mb-3"
+               role="button">Admin Panel</a>
+        {% endif %}
     {% else %}
-        <h1>{{ user.username }}'s Profile</h1>
+        <h1 class="mb-3">{{ user.username }}'s Profile</h1>
     {% endif %}
 
-    <ul class="list-group">
-        <li class="list-group-item">Email: {{ user.email }}</li>
-        <li class="list-group-item">Phone Number: {{ user.phone }}n</li>
-    </ul>
+    <div>
+        <p>Email: {{ user.email }}</p>
+        <p>Phone Number: {{ user.phone }}</p>
+        <p>
+            Cameras:
+            {{ user.allInStock|length }} in stock /
+            {{ user.allOutOfStock|length }} out of stock
+        </p>
+    </div>
 
-    {# camera \AppBundle\Entity\Camera #}
-    {% for camera in user.cameras %}
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Price</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>{{ camera.make }}</td>
-                <td>{{ camera.model }}</td>
-                <td>{{ camera.price }}</td>
+    <h2>Cameras</h2>
 
-                <td>
-                    <a href="{{ path('camera_show', { 'id': camera.id }) }}">show</a>
-                    <span> | </span>
-                    {% if app.user.id is same as(user.id) %}
-                        <a href="{{ path('camera_edit', { 'id': camera.id }) }}">edit</a>
-                    {% endif %}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    {% endfor %}
+    {% set cameras = user.cameras %}
+
+    {% if cameras is empty %}
+        {% if same_user %}
+            <p>You do not have any cameras yet. Maybe <a href="{{ path('camera_new') }}">add</a> one? :)</p>
+        {% else %}
+            <p>The user is not selling any cameras. Go to the <a href="{{ path('camera_index') }}">home page</a> to
+                find more offers.</p>
+        {% endif %}
+    {% else %}
+        {% if same_user %}
+            <div class="mb-3">
+                <a href="{{ path('camera_new') }}">Create a new camera</a>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% block table %}
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                {% for camera in cameras %}
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <table class="table-sm table-bordered">
+                            <tbody>
+                            <tr>
+                                <td rowspan="2" class="align-middle">
+                                    <img class="img-thumbnail" src="{{ camera.imageUrl }}">
+                                </td>
+                                <td>{{ camera.make }} / {{ camera.model }}</td>
+                                <td>{{ camera.price }}</td>
+                                {% block additional_td %}
+                                    {% if same_user %}
+                                        <td rowspan="2">
+                                            <a href="{{ path('camera_edit', { 'id': camera.id }) }}"
+                                               class="btn btn-info btn-block"
+                                               role="button">Edit</a>
+                                            <form action="{{ path('camera_delete', { 'id': camera.id }) }}"
+                                                  method="post"
+                                                  class="btn-block">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-block"
+                                                        onclick="return confirm('Are you sure?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    {% endif %}
+                                {% endblock %}
+                            </tr>
+                            <tr>
+                                <td class="text-left">
+                                    <a href="{{ path('camera_show', { 'id': camera.id }) }}">Details</a>
+                                </td>
+                                <td>
+                                    {% if camera.quantity > 0 %}
+                                        <span class="in-stock">IN STOCK</span>
+                                    {% else %}
+                                        <span class="out-of-stock">OUT OF STOCK</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock %}
 {% endblock %}

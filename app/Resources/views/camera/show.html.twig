@@ -1,61 +1,45 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Camera</h1>
-    <h2 class="h4">
+    <h1>
+        {{ camera.make }} / {{ camera.model }} - ${{ camera.price }} |
+        {% if camera.quantity > 0 %}
+            <span class="in-stock">IN STOCK</span>
+        {% else %}
+            <span class="out-of-stock">OUT OF STOCK</span>
+        {% endif %}
+    </h1>
+
+    <h2 class="h3">
         Posted by:
         <a href="{{ path('user_show', { 'id': camera.user.id }) }}">
             {{ camera.user.username }}
         </a>
     </h2>
 
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Make</th>
-            <th>Model</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Min Shutter Speed</th>
-            <th>Max Shutter Speed</th>
-            <th>Min ISO</th>
-            <th>Max ISO</th>
-            <th>Full Frame</th>
-            <th>Video Res</th>
-            <th>Light Metering</th>
-            <th>Description</th>
-            <th>Image</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{ camera.id }}</td>
-            <td>{{ camera.make }}</td>
-            <td>{{ camera.model }}</td>
-            <td>{{ camera.price }}</td>
-            <td>{{ camera.quantity }}</td>
-            <td>{{ camera.minShutterSpeed }}</td>
-            <td>{{ camera.maxShutterSpeed }}</td>
-            <td>{{ camera.minIso }}</td>
-            <td>{{ camera.maxIso }}</td>
-            <td>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</td>
-            <td>{{ camera.videoResolution }}</td>
-            <td>{{ camera.lightMetering }}</td>
-            <td>{{ camera.description }}</td>
-            <td><img src="{{ camera.imageUrl }}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div><img class="card-img" src="{{ camera.imageUrl }}"></div>
+                <p><strong>Is Full Frame: </strong>{% if camera.isFullFrame %}Yes{% else %}No{% endif %}</p>
+                <p><strong>Min Shutter Speed: </strong>{{ camera.minShutterSpeed }}</p>
+                <p><strong>Max Shutter Speed: </strong>{{ camera.maxShutterSpeed }}</p>
+                <p><strong>Min ISO: </strong>{{ camera.minIso }}</p>
+                <p><strong>Max ISO: </strong>{{ camera.maxIso }}</p>
+                <p><strong>Video Resolution: </strong>{{ camera.videoResolution }}</p>
+                <p><strong>Light Metering: </strong>
+                    {% for metering in camera.lightMetering %}
+                        - {{ metering }}
+                    {% endfor %}
+                    -
+                </p>
+                <p><strong>Description:</strong> {{ camera.description }}</p>
+            </div>
+        </div>
+    </div>
 
-    <div>
-        <div>
-            <a href="{{ path('camera_edit', { 'id': camera.id }) }}">Edit</a>
-        </div>
-        <div>
-            {{ form(delete_form) }}
-        </div>
-        <div>
+    <div class="container">
+        <div class="mb-3">
             <a href="{{ path('camera_index') }}">Back to the list</a>
         </div>
     </div>

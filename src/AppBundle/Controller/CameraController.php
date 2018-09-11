@@ -8,6 +8,7 @@ use AppBundle\Repository\CameraRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -44,12 +45,18 @@ class CameraController extends Controller
      */
     public function newAction(Request $request)
     {
+        $user = $this->getUser();
+
+        if (true === $user->isRestricted()) {
+            throw new AccessDeniedHttpException("Your permissions to post have been restricted.");
+        }
+
         $camera = new Camera();
         $form = $this->createForm(CameraType::class, $camera);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $camera->setUser($this->getUser());
+            $camera->setUser($user);
             $em = $this->getDoctrine()->getManager();
             $em->persist($camera);
             $em->flush();
@@ -79,11 +86,8 @@ class CameraController extends Controller
      */
     public function showAction(Camera $camera)
     {
-        $deleteForm = $this->createDeleteForm($camera);
-
         return $this->render('camera/show.html.twig', [
           'camera' => $camera,
-          'delete_form' => $deleteForm->createView(),
         ]);
     }
 
@@ -134,38 +138,27 @@ class CameraController extends Controller
      *     requirements={"id" = "\d+"}
      * )
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \AppBundle\Entity\Camera $camera
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Camera $camera)
+    public function deleteAction(Camera $camera)
     {
-        $form = $this->createDeleteForm($camera);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($camera);
-            $em->flush();
+        if (!$camera) {
+            throw new NotFoundHttpException('No camera found');
         }
 
-        return $this->redirectToRoute('camera_index');
-    }
+        $user = $this->getUser();
+        if ($user->getId() !== $camera->getUser()->getId()) {
+            throw new AccessDeniedHttpException("You cannot delete a camera you haven't added");
+        }
 
-    /**
-     * Creates a form to delete a Camera entity.
-     *
-     * @param Camera $camera The camera entity
-     *
-     * @return \Symfony\Component\Form\Form|\Symfony\Component\Form\FormInterface
-     */
-    private function createDeleteForm(Camera $camera)
-    {
-        return $this->createFormBuilder()
-          ->setAction($this->generateUrl('camera_delete',
-            ['id' => $camera->getId()]))
-          ->setMethod('DELETE')
-          ->getForm();
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($camera);
+        $em->flush();
+
+        return $this->redirectToRoute('user_show', [
+          'id' => $user->getId(),
+        ]);
     }
 }

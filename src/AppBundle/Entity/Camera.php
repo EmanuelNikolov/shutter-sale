@@ -125,8 +125,8 @@ class Camera
 
     /**
      * @var string
-     * @Assert\Choice(callback="getLightMeterings")
-     * @ORM\Column(name="light_metering", type="string", length=15)
+     * @Assert\Choice(callback="getLightMeterings", multiple=true)
+     * @ORM\Column(name="light_metering", type="simple_array")
      */
     private $lightMetering;
 

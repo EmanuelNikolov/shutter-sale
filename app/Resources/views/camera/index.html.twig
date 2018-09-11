@@ -1,44 +1,21 @@
-{% extends 'base.html.twig' %}
+{% extends 'user/show.html.twig' %}
 
 {% block body %}
-    <h1>Cameras</h1>
+    {% block homebutton %}{% endblock %}
+    <h1 class="mt-3">Cameras</h1>
 
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Image</th>
-            <th>Make</th>
-            <th>Model</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for camera in cameras %}
-            <tr>
-                <td><img src="{{ camera.imageUrl }}"></td>
-                <td>{{ camera.make }}</td>
-                <td>{{ camera.model }}</td>
-                <td>{{ camera.price }}</td>
-                <td>
-                    {% if camera.quantity > 0 %}
-                        <span class="in-stock">IN STOCK</span>
-                    {% else %}
-                        <span class="out-of-stock">OUT OF STOCK</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{{ path('camera_show', { 'id': camera.id }) }}">show</a>
-                    <span> | </span>
-                    <a href="{{ path('camera_edit', { 'id': camera.id }) }}">edit</a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <p>Logged in as: <a href="{{ path('user_show', { 'id': app.user.id }) }}">{{ app.user.username }}</a></p>
+    {% else %}
+        <p>
+        <a href="{{ path('security_login') }}"
+           type="button"
+           class="btn btn-info ">Login/Register</a>
+        </p>
+    {% endif %}
 
-    <div>
-        <a href="{{ path('camera_new') }}">Create a new camera</a>
-    </div>
+    {% block table %}
+        {{ parent() }}
+        {% block additional_td %}{% endblock %}
+    {% endblock %}
 {% endblock %}

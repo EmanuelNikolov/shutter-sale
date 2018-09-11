@@ -13,7 +13,7 @@ class UserController extends Controller
 {
 
     /**
-     * Registers a User.
+     * Registers a user.
      * @Route("/register", name="user_register", methods={"GET", "POST"})
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface $userPasswordEncoder
@@ -40,6 +40,33 @@ class UserController extends Controller
         }
 
         return $this->render('user/register.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * Displays a form to edit an existing user entity.
+     * @Route("/user/edit", name="user_edit", methods={"GET", "POST"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function editAction(Request $request)
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('user_show',
+              ['id' => $user->getId()]);
+        }
+
+        return $this->render('user/edit.html.twig', [
+          'user' => $user,
+          'form' => $form->createView(),
+        ]);
     }
 
     /**

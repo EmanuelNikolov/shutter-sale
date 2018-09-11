@@ -1,7 +1,11 @@
 {% extends 'default/form.html.twig' %}
 
-{% block body %}
     {% block form %}
+        <h1 class="mb-3">Login</h1>
         {{ form(form) }}
+        <hr>
+        <p>You don't have an account?</p>
+        <a href="{{ path('user_register') }}"
+           type="button"
+           class="btn btn-success btn-block">Register</a>
     {% endblock %}
-{% endblock %}

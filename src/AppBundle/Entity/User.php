@@ -76,14 +76,26 @@ class User implements UserInterface, \Serializable
     private $phone;
 
     /**
+     * @var bool
+     * @ORM\Column(name="is_restricted", type="boolean")
+     */
+    private $isRestricted;
+
+    /**
      * One User has many Cameras.
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Camera", mappedBy="user")
      */
     private $cameras;
 
+    /**
+     * @ORM\Column(type="json_array")
+     */
+    private $roles;
+
     public function __construct()
     {
         $this->cameras = new ArrayCollection();
+        $this->setIsRestricted(false);
     }
 
     /**
@@ -250,7 +262,17 @@ class User implements UserInterface, \Serializable
 
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        $roles = $this->roles;
+        // give everyone ROLE_USER!
+        if (!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+        return $roles;
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
     }
 
     /**
@@ -275,5 +297,43 @@ class User implements UserInterface, \Serializable
     {
         $this->plainPassword = null;
     }
-}
 
+    /**
+     * Get cameras in stock.
+     */
+    public function getAllInStock()
+    {
+        return $this->cameras->filter(function (Camera $camera) {
+            return $camera->getQuantity() > 0;
+        });
+    }
+
+    /**
+     * Get cameras out of stock
+     */
+    public function getAllOutOfStock()
+    {
+        return $this->cameras->filter(function (Camera $camera) {
+            return $camera->getQuantity() < 1;
+        });
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestricted(): bool
+    {
+        return $this->isRestricted;
+    }
+
+    /**
+     * @param bool $isRestricted
+     *
+     * @return User
+     */
+    public function setIsRestricted(bool $isRestricted): User
+    {
+        $this->isRestricted = $isRestricted;
+        return $this;
+    }
+}

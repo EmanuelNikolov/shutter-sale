@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="mb-4">All Users</h1>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>In Stock Total</th>
+                        <th>Out Of Stock Total</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# user \AppBundle\Entity\User #}
+                    {% for user in users %}
+                        <tr>
+                            <td class="align-middle">{{ user.username }}</td>
+                            <td class="align-middle">{{ user.allInStock|length }}</td>
+                            <td class="align-middle">{{ user.allOutOfStock|length }}</td>
+                            <td class="align-middle"    >
+                                <a href="{{ path('admin_restrict', { 'id': user.id }) }}"
+                                   class="btn btn-danger btn-block "
+                                   role="button"
+                                   onclick="return confirm('Are you sure?')">
+                                    {{ user.restricted ? 'Unrestrict' : 'Restrict' }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

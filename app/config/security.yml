@@ -40,3 +40,4 @@ security:
     access_control:
         - { path: ^/camera, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/user, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/admin, roles: ROLE_ADMIN }

@@ -49,9 +49,14 @@ class CameraType extends AbstractType
           ->add('videoResolution', TextType::class)
           ->add('lightMetering', ChoiceType::class, [
             'choices' => Camera::getLightMeterings(),
+            'multiple' => true,
+            'expanded' => true,
             'choice_label' => function ($choiceValue, $key, $value) {
-                return ucfirst($value);
+                return $value;
             },
+            'label_attr' => [
+              'class' => 'checkbox-inline',
+            ],
           ])
           ->add('description', TextareaType::class)
           ->add('imageUrl', UrlType::class)

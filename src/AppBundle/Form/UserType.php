@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserType extends AbstractType
@@ -33,6 +35,16 @@ class UserType extends AbstractType
           ])
           ->add('phone', TelType::class)
           ->add('submit', SubmitType::class);
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA,
+          function (FormEvent $event) {
+              $user = $event->getData();
+              $form = $event->getForm();
+
+              if (null !== $user->getId()) {
+                  $form->remove('username');
+              }
+          });
     }
 
     /**
