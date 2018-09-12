@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserType extends AbstractType
@@ -43,6 +44,7 @@ class UserType extends AbstractType
 
               if (null !== $user->getId()) {
                   $form->remove('username');
+                  $form->remove('plainPassword');
               }
           });
     }
@@ -54,6 +56,15 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
           'data_class' => User::class,
+          'validation_groups' => function (FormInterface $form) {
+              $user = $form->getData();
+
+              if (null === $user->getId()) {
+                  return ['Default', 'Edit'];
+              }
+
+              return ['Edit'];
+          },
         ]);
     }
 
@@ -64,6 +75,4 @@ class UserType extends AbstractType
     {
         return 'appbundle_user';
     }
-
-
 }

@@ -4,8 +4,8 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -14,6 +14,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, \Serializable
 {
+
+    const ROLE_BASIC = 'ROLE_USER';
 
     /**
      * @var int
@@ -26,12 +28,14 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      * @Assert\NotBlank()
-     * @Assert\Type("alpha", message="Your username can contain only letters (case-insensitive)")
+     * @Assert\Type("alpha", message="Your username can contain only letters
+     *   (case-insensitive)")
      * @Assert\Length(
      *      min = 4,
      *      max = 20,
-     *      minMessage = "Your username must be at least {{ limit }} characters long",
-     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
+     *      minMessage = "Your username must be at least {{ limit }} characters
+     *   long", maxMessage = "Your username cannot be longer than {{ limit }}
+     *   characters"
      * )
      * @ORM\Column(name="username", type="string", length=20, unique=true)
      */
@@ -39,7 +43,10 @@ class User implements UserInterface, \Serializable
 
     /**
      * @var string
-     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     groups={"Edit"})
+     * )
      * @ORM\Column(name="email", type="string", length=255, unique=true)
      */
     private $email;
@@ -52,11 +59,13 @@ class User implements UserInterface, \Serializable
 
     /**
      * The plain password from user input on registration.
+     *
      * @var string
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = 3,
-     *      minMessage = "Your password must be at least {{ limit }} characters long",
+     *      minMessage = "Your password must be at least {{ limit }} characters
+     *   long",
      * )
      * @Assert\Regex(
      *     pattern="/[a-z0-9]+/",
@@ -69,7 +78,9 @@ class User implements UserInterface, \Serializable
      * @var string
      * @Assert\Regex(
      *     pattern="/^\+\d{10,12}$/",
-     *     message="Your phone number must start with a + followed by 10 to 12 digits"
+     *     message="Your phone number must start with a + followed by 10 to 12
+     *   digits",
+     *     groups={"Edit"})
      * )
      * @ORM\Column(name="phone", type="string", length=13, unique=true)
      */
@@ -95,6 +106,7 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->cameras = new ArrayCollection();
+        $this->setRoles([]);
         $this->setIsRestricted(false);
     }
 
@@ -115,7 +127,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setUsername($username)
+    public function setUsername($username): User
     {
         $this->username = $username;
 
@@ -139,7 +151,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setEmail($email)
+    public function setEmail($email): User
     {
         $this->email = $email;
 
@@ -163,7 +175,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setPassword($password)
+    public function setPassword($password): User
     {
         $this->password = $password;
 
@@ -187,7 +199,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setPhone($phone)
+    public function setPhone($phone): User
     {
         $this->phone = $phone;
 
@@ -217,7 +229,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setPlainPassword($plainPassword)
+    public function setPlainPassword($plainPassword): User
     {
         $this->plainPassword = $plainPassword;
         return $this;
@@ -236,7 +248,7 @@ class User implements UserInterface, \Serializable
      *
      * @return User
      */
-    public function setCameras($cameras)
+    public function setCameras($cameras): User
     {
         $this->cameras = $cameras;
         return $this;
@@ -260,18 +272,17 @@ class User implements UserInterface, \Serializable
           ) = unserialize($serialized);
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
-        $roles = $this->roles;
-        // give everyone ROLE_USER!
-        if (!in_array('ROLE_USER', $roles)) {
-            $roles[] = 'ROLE_USER';
-        }
-        return $roles;
+        return $this->roles;
     }
 
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): void
     {
+        if (empty($roles)) {
+            $roles[] = self::ROLE_BASIC;
+        }
+
         $this->roles = $roles;
     }
 
@@ -293,7 +304,7 @@ class User implements UserInterface, \Serializable
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         $this->plainPassword = null;
     }
@@ -321,7 +332,7 @@ class User implements UserInterface, \Serializable
     /**
      * @return bool
      */
-    public function isRestricted(): bool
+    public function isRestricted()
     {
         return $this->isRestricted;
     }

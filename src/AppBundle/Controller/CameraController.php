@@ -4,13 +4,12 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Camera;
 use AppBundle\Form\CameraType;
-use AppBundle\Repository\CameraRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use AppBundle\Security\CameraVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Camera controller.
@@ -107,15 +106,12 @@ class CameraController extends Controller
      */
     public function editAction(Request $request, Camera $camera)
     {
-        if ($this->getUser()->getId() !== $camera->getUser()->getId()) {
-            throw new AccessDeniedHttpException("You do not have permission to edit this camera.");
-        }
+        $this->denyAccessUnlessGranted(CameraVoter::EDIT, $camera);
 
-        $editForm = $this->createForm(CameraType::class, $camera);
-        $deleteForm = $this->createDeleteForm($camera);
-        $editForm->handleRequest($request);
+        $form = $this->createForm(CameraType::class, $camera);
+        $form->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('camera_edit',
@@ -124,8 +120,7 @@ class CameraController extends Controller
 
         return $this->render('camera/edit.html.twig', [
           'camera' => $camera,
-          'edit_form' => $editForm->createView(),
-          'delete_form' => $deleteForm->createView(),
+          'form' => $form->createView(),
         ]);
     }
 

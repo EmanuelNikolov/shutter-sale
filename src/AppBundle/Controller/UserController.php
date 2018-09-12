@@ -15,15 +15,25 @@ class UserController extends Controller
     /**
      * Registers a user.
      * @Route("/register", name="user_register", methods={"GET", "POST"})
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface $userPasswordEncoder
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function registerAction(
       Request $request,
       UserPasswordEncoderInterface $userPasswordEncoder
     ) {
+        if ($this->container->get('security.authorization_checker')
+          ->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('user_show', [
+              'id' => $this->getUser()->getId(),
+            ]);
+        }
+
         $user = new User();
+
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
@@ -39,7 +49,9 @@ class UserController extends Controller
             return $this->redirectToRoute('security_login');
         }
 
-        return $this->render('user/register.html.twig', ['form' => $form->createView()]);
+        return $this->render('user/register.html.twig', [
+          'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -77,13 +89,15 @@ class UserController extends Controller
      *     methods={"GET"},
      *     requirements={"id" = "\d+"}
      * )
+     *
      * @param \AppBundle\Entity\User $user
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(User $user)
     {
         return $this->render('user/show.html.twig', [
-          'user' => $user
+          'user' => $user,
         ]);
     }
 }

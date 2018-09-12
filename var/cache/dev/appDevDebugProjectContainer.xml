@@ -517,11 +517,18 @@
     <service id="AppBundle\Form\CameraType" class="AppBundle\Form\CameraType" public="false" autowire="true" autoconfigure="true">
       <tag name="form.type"/>
     </service>
+    <service id="AppBundle\Form\ChangePasswordType" class="AppBundle\Form\ChangePasswordType" public="false" autowire="true" autoconfigure="true">
+      <tag name="form.type"/>
+    </service>
     <service id="AppBundle\Form\LoginType" class="AppBundle\Form\LoginType" public="false" autowire="true" autoconfigure="true">
       <tag name="form.type"/>
     </service>
+    <service id="AppBundle\Form\Model\ChangePassword" class="AppBundle\Form\Model\ChangePassword" public="false" autowire="true" autoconfigure="true"/>
     <service id="AppBundle\Form\UserType" class="AppBundle\Form\UserType" public="false" autowire="true" autoconfigure="true">
       <tag name="form.type"/>
+    </service>
+    <service id="AppBundle\Security\CameraVoter" class="AppBundle\Security\CameraVoter" public="false" autowire="true" autoconfigure="true">
+      <tag name="security.voter"/>
     </service>
     <service id="controller_name_converter" class="Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser" public="false">
       <tag name="monolog.logger" channel="request"/>
@@ -539,7 +546,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" public="false">
       <tag name="controller.argument_value_resolver" priority="-50"/>
-      <argument type="service" id="service_locator.unhri25"/>
+      <argument type="service" id="service_locator.puomt7e"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false">
       <tag name="controller.argument_value_resolver" priority="-100"/>
@@ -772,6 +779,7 @@
       </argument>
       <argument type="collection">
         <argument>AppBundle\Form\CameraType</argument>
+        <argument>AppBundle\Form\ChangePasswordType</argument>
         <argument>AppBundle\Form\LoginType</argument>
         <argument>AppBundle\Form\UserType</argument>
         <argument>Symfony\Component\Form\Extension\Core\Type\FormType</argument>
@@ -986,7 +994,7 @@
       <argument type="service" id="form.resolved_type_factory"/>
     </service>
     <service id="form.extension" class="Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension" public="false">
-      <argument type="service" id="service_locator.4o2aivc"/>
+      <argument type="service" id="service_locator.u6i9a51"/>
       <argument type="collection">
         <argument key="Symfony\Component\Form\Extension\Core\Type\FormType" type="iterator">
           <argument type="service" id="form.type_extension.form.http_foundation"/>
@@ -1611,6 +1619,14 @@
       </call>
       <call method="addListener">
         <argument>kernel.request</argument>
+        <argument type="collection">
+          <argument type="service" id="debug.debug_handlers_listener"/>
+          <argument>configure</argument>
+        </argument>
+        <argument>2048</argument>
+      </call>
+      <call method="addListener">
+        <argument>console.command</argument>
         <argument type="collection">
           <argument type="service" id="debug.debug_handlers_listener"/>
           <argument>configure</argument>
@@ -3729,10 +3745,14 @@
     <service id="abstract.instanceof.AppBundle\Controller\UserController" class="AppBundle\Controller\UserController" public="true" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Component\Form\FormTypeInterface.0.AppBundle\Form\CameraType" class="AppBundle\Form\CameraType" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.AppBundle\Form\CameraType" class="AppBundle\Form\CameraType" public="false" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id="instanceof.Symfony\Component\Form\FormTypeInterface.0.AppBundle\Form\ChangePasswordType" class="AppBundle\Form\ChangePasswordType" public="false" autowire="true" abstract="true"/>
+    <service id="abstract.instanceof.AppBundle\Form\ChangePasswordType" class="AppBundle\Form\ChangePasswordType" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Component\Form\FormTypeInterface.0.AppBundle\Form\LoginType" class="AppBundle\Form\LoginType" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.AppBundle\Form\LoginType" class="AppBundle\Form\LoginType" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="instanceof.Symfony\Component\Form\FormTypeInterface.0.AppBundle\Form\UserType" class="AppBundle\Form\UserType" public="false" autowire="true" abstract="true"/>
     <service id="abstract.instanceof.AppBundle\Form\UserType" class="AppBundle\Form\UserType" public="false" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id="instanceof.Symfony\Component\Security\Core\Authorization\Voter\VoterInterface.0.AppBundle\Security\CameraVoter" class="AppBundle\Security\CameraVoter" public="false" autowire="true" abstract="true"/>
+    <service id="abstract.instanceof.AppBundle\Security\CameraVoter" class="AppBundle\Security\CameraVoter" public="false" autowire="true" autoconfigure="true" abstract="true"/>
     <service id="service_locator.hy1gkq4" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection"/>
@@ -3747,6 +3767,12 @@
         <argument key="authenticationUtils" type="service" id="security.authentication_utils" on-invalid="ignore"/>
       </argument>
     </service>
+    <service id="service_locator.gfr9o5l" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="userPasswordEncoder" type="service" id="security.user_password_encoder.generic" on-invalid="ignore"/>
+      </argument>
+    </service>
     <service id="service_locator.ftv2m2r" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -3757,11 +3783,13 @@
       <tag name="container.service_locator"/>
       <argument type="collection"/>
     </service>
-    <service id="service_locator.unhri25" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id="service_locator.puomt7e" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
+        <argument key="AppBundle\Controller\SecurityController:changePasswordAction" type="service" id="service_locator.gfr9o5l"/>
         <argument key="AppBundle\Controller\SecurityController:loginAction" type="service" id="service_locator.jwewuuw"/>
         <argument key="AppBundle\Controller\UserController:registerAction" type="service" id="service_locator.ftv2m2r"/>
+        <argument key="AppBundle\Controller\SecurityController::changePasswordAction" type="service" id="service_locator.gfr9o5l"/>
         <argument key="AppBundle\Controller\SecurityController::loginAction" type="service" id="service_locator.jwewuuw"/>
         <argument key="AppBundle\Controller\UserController::registerAction" type="service" id="service_locator.ftv2m2r"/>
       </argument>
@@ -3772,10 +3800,11 @@
         <argument key="inline" type="service" id="fragment.renderer.inline"/>
       </argument>
     </service>
-    <service id="service_locator.4o2aivc" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id="service_locator.u6i9a51" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="AppBundle\Form\CameraType" type="service" id="AppBundle\Form\CameraType"/>
+        <argument key="AppBundle\Form\ChangePasswordType" type="service" id="AppBundle\Form\ChangePasswordType"/>
         <argument key="AppBundle\Form\LoginType" type="service" id="AppBundle\Form\LoginType"/>
         <argument key="AppBundle\Form\UserType" type="service" id="AppBundle\Form\UserType"/>
         <argument key="Symfony\Bridge\Doctrine\Form\Type\EntityType" type="service" id="form.type.entity"/>
@@ -3927,6 +3956,7 @@
         <argument type="service" id="security.access.authenticated_voter"/>
         <argument type="service" id="security.access.simple_role_voter"/>
         <argument type="service" id="security.access.expression_voter"/>
+        <argument type="service" id="AppBundle\Security\CameraVoter"/>
       </argument>
       <argument>affirmative</argument>
       <argument>false</argument>

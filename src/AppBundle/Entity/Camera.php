@@ -124,7 +124,8 @@ class Camera
     private $videoResolution;
 
     /**
-     * @var string
+     * @var array
+     * @Assert\NotBlank()
      * @Assert\Choice(callback="getLightMeterings", multiple=true)
      * @ORM\Column(name="light_metering", type="simple_array")
      */
@@ -423,7 +424,6 @@ class Camera
     /**
      * Get lightMetering
      *
-     * @return string
      */
     public function getLightMetering()
     {
@@ -548,4 +548,3 @@ class Camera
         }
     }
 }
-

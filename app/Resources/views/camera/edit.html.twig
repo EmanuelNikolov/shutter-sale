@@ -1,16 +1,11 @@
 {% extends 'default/form.html.twig' %}
 
 {% block form %}
-    <h1>Edit Camera</h1>
+    <h1 class="mb-3">Edit Camera</h1>
 
-    {{ form(edit_form) }}
+    {{ form(form) }}
 
-    <div>
-        <div>
-            <a href="{{ path('camera_index') }}">Back to the list</a>
-        </div>
-        <div>
-            {{ form(delete_form) }}
-        </div>
+    <div class="mb-3">
+        <a href="{{ path('camera_index') }}">Back to the list</a>
     </div>
 {% endblock %}

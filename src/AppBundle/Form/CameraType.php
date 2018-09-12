@@ -45,6 +45,7 @@ class CameraType extends AbstractType
           ->add('maxIso', IntegerType::class)
           ->add('isFullFrame', CheckboxType::class, [
             'label' => "Is it Full Frame?",
+            'required' => false,
           ])
           ->add('videoResolution', TextType::class)
           ->add('lightMetering', ChoiceType::class, [
@@ -69,7 +70,7 @@ class CameraType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-          'data_class' => 'AppBundle\Entity\Camera',
+          'data_class' => Camera::class,
         ]);
     }
 

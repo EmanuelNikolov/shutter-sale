@@ -1,5 +1,10 @@
 {% extends 'default/form.html.twig' %}
 
 {% block form %}
+    <h1 class="mb-3">Edit Profile</h1>
     {{ form(form) }}
+    <hr>
+    <a href="{{ path('security_change_password') }}"
+       type="button"
+       class="btn btn-success btn-block">Change Password</a>
 {% endblock %}
