@@ -16,6 +16,6 @@ if (!\class_exists(appDevDebugProjectContainer::class, false)) {
 
 return new \ContainerAnuifsd\appDevDebugProjectContainer(array(
     'container.build_hash' => 'Anuifsd',
-    'container.build_id' => 'fd25519b',
-    'container.build_time' => 1536781916,
+    'container.build_id' => '5824de03',
+    'container.build_time' => 1536821404,
 ), __DIR__.\DIRECTORY_SEPARATOR.'ContainerAnuifsd');

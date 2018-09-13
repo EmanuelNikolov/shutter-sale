@@ -156,4 +156,19 @@ class CameraController extends Controller
           'id' => $user->getId(),
         ]);
     }
+
+    /**
+     * Sort cameras by a filter
+     *
+     * @Route("/filter", name="camera_filter", methods={"GET"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     *
+     */
+    public function orderAction(Request $request)
+    {
+        $filter = $request->query->get('q');
+        // TODO: Finish multiple query search option.
+    }
 }
