@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
+use AppBundle\Form\FilterCamerasType;
 use AppBundle\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +51,7 @@ class UserController extends Controller
         }
 
         return $this->render('user/register.html.twig', [
-          'form' => $form->createView()
+          'form' => $form->createView(),
         ]);
     }
 
@@ -86,18 +87,29 @@ class UserController extends Controller
      * @Route(
      *     "/user/{id}",
      *     name="user_show",
-     *     methods={"GET"},
+     *     methods={"GET", "POST"},
      *     requirements={"id" = "\d+"}
      * )
      *
+     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \AppBundle\Entity\User $user
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function showAction(User $user)
+    public function showAction(Request $request, User $user)
     {
+        $form = $this->createForm(FilterCamerasType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+            $filteredCameras = $user->getFilteredCameras($formData);
+            $user->setCameras($filteredCameras);
+        }
+
         return $this->render('user/show.html.twig', [
           'user' => $user,
+          'form' => $form->createView(),
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -236,7 +237,7 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
     public function getCameras()
     {
@@ -346,5 +347,15 @@ class User implements UserInterface, \Serializable
     {
         $this->isRestricted = $isRestricted;
         return $this;
+    }
+
+    public function getFilteredCameras(array $formData)
+    {
+        // TODO: Move this to the repo
+        $criteria = Criteria::create()
+          ->andWhere(Criteria::expr()->gte('quantity', $formData['stock']))
+          ->orderBy([$formData['sortBy'] => $formData['orderBy']]);
+
+        return $this->getCameras()->matching($criteria);
     }
 }

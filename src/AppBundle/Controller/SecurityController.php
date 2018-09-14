@@ -17,7 +17,7 @@ class SecurityController extends Controller
 
     /**
      * Login a User.
-     * @Route("/login", name="security_login")
+     * @Route("/login", name="security_login", methods={"GET", "POST"})
      *
      * @param \Symfony\Component\Security\Http\Authentication\AuthenticationUtils $authenticationUtils
      *
@@ -48,7 +48,7 @@ class SecurityController extends Controller
 
     /**
      * Logout a User.
-     * @Route("/logout", name="security_logout")
+     * @Route("/logout", name="security_logout", methods={"GET"})
      */
     public function logoutAction()
     {

@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Camera;
 use AppBundle\Form\CameraType;
+use AppBundle\Form\FilterCamerasType;
 use AppBundle\Security\CameraVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,16 +22,35 @@ class CameraController extends Controller
 
     /**
      * Lists all camera entities.
-     * @Route("/", name="camera_index", methods={"GET"})
+     * @Route("/", name="camera_index", methods={"GET", "POST"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
+        $form = $this->createForm(FilterCamerasType::class);
+        $form->handleRequest($request);
+
         $em = $this->getDoctrine()->getManager();
 
-        $cameras = $em->getRepository(Camera::class)->findAll();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = $form->getData();
+
+            $cameras = $em->getRepository(Camera::class)
+              ->findAllByFilter(
+                $formData['sortBy'],
+                $formData['orderBy'],
+                $formData['stock']
+              );
+        } else {
+            $cameras = $em->getRepository(Camera::class)->findAll();
+        }
 
         return $this->render('camera/index.html.twig', [
           'cameras' => $cameras,
+          'form' => $form->createView(),
         ]);
     }
 
@@ -155,20 +175,5 @@ class CameraController extends Controller
         return $this->redirectToRoute('user_show', [
           'id' => $user->getId(),
         ]);
-    }
-
-    /**
-     * Sort cameras by a filter
-     *
-     * @Route("/filter", name="camera_filter", methods={"GET"})
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *
-     *
-     */
-    public function orderAction(Request $request)
-    {
-        $filter = $request->query->get('q');
-        // TODO: Finish multiple query search option.
     }
 }
