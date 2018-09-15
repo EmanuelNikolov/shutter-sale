@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Camera;
 use AppBundle\Form\CameraType;
 use AppBundle\Form\FilterCamerasType;
+use AppBundle\Form\Model\FilterCameras;
 use AppBundle\Security\CameraVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,20 +31,15 @@ class CameraController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $form = $this->createForm(FilterCamerasType::class);
+        $filterCameras = new FilterCameras();
+        $form = $this->createForm(FilterCamerasType::class, $filterCameras);
         $form->handleRequest($request);
 
         $em = $this->getDoctrine()->getManager();
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
-
             $cameras = $em->getRepository(Camera::class)
-              ->findAllByFilter(
-                $formData['sortBy'],
-                $formData['orderBy'],
-                $formData['stock']
-              );
+              ->findAllByFilter($filterCameras);
         } else {
             $cameras = $em->getRepository(Camera::class)->findAll();
         }

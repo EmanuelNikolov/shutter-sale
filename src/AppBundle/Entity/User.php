@@ -2,8 +2,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Form\Model\FilterCameras;
+use AppBundle\Repository\CameraRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -349,13 +350,10 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getFilteredCameras(array $formData)
+    public function getFilteredCameras(FilterCameras $filter)
     {
-        // TODO: Move this to the repo
-        $criteria = Criteria::create()
-          ->andWhere(Criteria::expr()->gte('quantity', $formData['stock']))
-          ->orderBy([$formData['sortBy'] => $formData['orderBy']]);
-
-        return $this->getCameras()->matching($criteria);
+        return $this->getCameras()->matching(
+          CameraRepository::createFilterCamerasCriteria($filter)
+        );
     }
 }

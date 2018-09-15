@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Form\Model\FilterCameras;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -10,22 +11,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class FilterCamerasType extends AbstractType
 {
-    const SORT_BY = [
-      'make',
-      'model',
-      'price',
-    ];
-
-    const ORDER_BY = [
-      'ASC',
-      'DESC',
-    ];
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
           ->add('sortBy', ChoiceType::class, [
-            'choices' => self::SORT_BY,
+            'choices' => FilterCameras::VALID_SORT_BY,
             'choice_label' => function ($choice, $key, $value) {
                 return ucfirst($value);
             },
@@ -33,7 +24,7 @@ class FilterCamerasType extends AbstractType
             'placeholder' => '- Sort By -',
           ])
           ->add('orderBy', ChoiceType::class, [
-            'choices' => self::ORDER_BY,
+            'choices' => FilterCameras::VALID_ORDER_BY,
             'choice_label' => function ($choice, $key, $value) {
                 return ucfirst(strtolower($value . 'ending'));
             },

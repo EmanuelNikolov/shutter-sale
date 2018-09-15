@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
 use AppBundle\Form\FilterCamerasType;
+use AppBundle\Form\Model\FilterCameras;
 use AppBundle\Form\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,12 +99,12 @@ class UserController extends Controller
      */
     public function showAction(Request $request, User $user)
     {
-        $form = $this->createForm(FilterCamerasType::class);
+        $filterCameras = new FilterCameras();
+        $form = $this->createForm(FilterCamerasType::class, $filterCameras);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
-            $filteredCameras = $user->getFilteredCameras($formData);
+            $filteredCameras = $user->getFilteredCameras($filterCameras);
             $user->setCameras($filteredCameras);
         }
 
