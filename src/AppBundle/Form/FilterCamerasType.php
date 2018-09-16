@@ -26,7 +26,7 @@ class FilterCamerasType extends AbstractType
           ->add('orderBy', ChoiceType::class, [
             'choices' => FilterCameras::VALID_ORDER_BY,
             'choice_label' => function ($choice, $key, $value) {
-                return ucfirst(strtolower($value . 'ending'));
+                return ucfirst(strtolower($value) . 'ending');
             },
             'label_attr' => ['class' => 'sr-only'],
             'placeholder' => '- Order By -',
@@ -36,7 +36,7 @@ class FilterCamerasType extends AbstractType
             'required' => false,
           ])
           ->add('submit', SubmitType::class, [
-            'label' => 'Filter'
+            'label' => 'Filter',
           ]);
     }
 }
