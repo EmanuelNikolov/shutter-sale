@@ -50,8 +50,6 @@ class CameraController extends Controller
         ]);
     }
 
-    // TODO: Relocate search in a new controller
-
     /**
      * Creates a new Camera entity.
      * @Route("/camera/new", name="camera_new", methods={"GET", "POST"})

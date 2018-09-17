@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FilterCamerasType extends AbstractType
 {
@@ -37,6 +38,18 @@ class FilterCamerasType extends AbstractType
           ])
           ->add('submit', SubmitType::class, [
             'label' => 'Filter',
-          ]);
+          ])
+          ->setMethod("GET");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+          'data_class' => FilterCameras::class,
+          'csrf_protection' => false
+        ]);
     }
 }
